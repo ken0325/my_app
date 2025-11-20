@@ -1,0 +1,16 @@
+{
+    "@@locale": "en",
+    "appName": "Budgeting App",   
+    "login": "Login",
+    "tabHome": "Home",
+    "tabProject": "Project",
+    "settings": "Settings",
+    "settingLanguage": "Language",
+    "autoBySystem": "Auto",
+    "themeMode": "Theme Mode",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "english": "English",
+    "simplifiedChinese": "Simplified Chinese",
+    "traditionalChinese": "Traditional Chinese"
+}

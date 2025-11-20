@@ -1,0 +1,18 @@
+{
+    "@@locale": "zh",
+    "appName": "预算应用",
+    "login": "登录",
+    "tabHome": "首页",
+    "tabProject": "项目",
+    "settings": "设置",
+    "settingLanguage": "语言",
+    "autoBySystem": "自动",
+    "themeMode": "主题模式",
+    "darkMode": "暗黑模式",
+    "lightMode": "亮黑模式",
+    "english": "英语",
+    "simplifiedChinese": "简体中文",
+    "traditionalChinese": "繁体中文"
+}
+
+

@@ -1,0 +1,16 @@
+{
+    "@@locale": "zh_TW",
+    "appName": "預算應用",
+    "login": "登入",
+    "tabHome": "首頁",
+    "tabProject": "專案",
+    "settings": "設定",
+    "settingLanguage": "語言",
+    "autoBySystem": "自動",
+    "themeMode": "主題模式",
+    "darkMode": "暗黑模式",
+    "lightMode": "亮黑模式",
+    "english": "英文",
+    "simplifiedChinese": "簡體中文",
+    "traditionalChinese": "繁體中文"
+}
