@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:my_app/provider/locale_provider.dart';
 import 'package:my_app/provider/theme_provider.dart';
 
-import 'package:my_app/views/home.dart';
-import 'package:my_app/views/settings/setting.dart';
+import 'views/home.dart';
+import 'views/settings/setting.dart';
+import 'views/addTransaction.dart';
 
 void main() {
   runApp(MyApp());
@@ -112,6 +113,9 @@ class MyApp extends StatelessWidget {
                 theme: ThemeData(
                   primarySwatch: Colors.blue,
                   visualDensity: VisualDensity.adaptivePlatformDensity,
+                  useMaterial3: true,
+                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+                  fontFamily: 'Roboto',
                 ),
 
                 // 深色、浅色主题选择 的第二种方式的第一个选项
@@ -129,7 +133,10 @@ class MyApp extends StatelessWidget {
                     child: widget!,
                   );
                 },
-                routes: {"setting": (context) => SettingScreen()},
+                routes: {
+                  "setting": (context) => SettingScreen(),
+                  "addTransaction": (context) => AddTransactionScreen(),
+                },
                 debugShowCheckedModeBanner: false,
                 home: HomeScreen(),
               );
