@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import '../../api/dataApi.dart';
+import '../../model/data.dart';
+
+class Summarycard extends StatelessWidget {
+  final List<Data> filtered;
+  final bool showOnlyThisMonth;
+
+  const Summarycard({super.key, required this.filtered, required this.showOnlyThisMonth});
+
+//   @override
+//   State<Summarycard> createState() => _SummarycardState();
+// }
+
+// class _SummarycardState extends State<Summarycard> {
+  @override
+  Widget build(BuildContext context) {
+    final income = filtered
+        .where((tx) => tx.isIncome == true)
+        .fold<double>(0, (sum, tx) => sum + (tx.amount as double));
+
+    final expense = filtered
+        .where((tx) => tx.isIncome == false)
+        .fold<double>(0, (sum, tx) => sum + (tx.amount as double).abs());
+
+    final balance = income - expense;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            showOnlyThisMonth ? '本月結餘' : '總結餘',
+            style: TextStyle(color: Colors.white70, fontSize: 13),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '\$${balance.toStringAsFixed(2)}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _buildSummaryItem(
+                label: showOnlyThisMonth ? '本月收入' : '總收入',
+                amount: income,
+                color: Colors.greenAccent,
+              ),
+              const SizedBox(width: 24),
+              _buildSummaryItem(
+                label: showOnlyThisMonth ? '本月支出' : '總支出',
+                amount: expense,
+                color: Colors.redAccent,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryItem({
+    required String label,
+    required double amount,
+    required Color color,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              // '\$${amount.toStringAsFixed(2)}',
+              '\$${DataApi().formatAmountToString(amount)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

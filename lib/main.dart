@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:my_app/l10n/app_localizations.dart';
-
 import 'package:provider/provider.dart';
 import 'package:my_app/provider/locale_provider.dart';
 import 'package:my_app/provider/theme_provider.dart';
-
 import 'views/home.dart';
-import 'views/settings/setting.dart';
+import 'views/setting.dart';
 import 'views/addTransaction.dart';
 
 void main() {
@@ -20,20 +17,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // MultiProvider 用于管理多个 Provider
+    // MultiProvider 用於管理多個 Provider
     return MultiProvider(
       providers: [
-        // ChangeNotifierProvider 用于对 ChangeNotifier 进行监听
+        // ChangeNotifierProvider 用於對 ChangeNotifier 進行監聽
         ChangeNotifierProvider<ThemeProvider>(
           create: (context) => ThemeProvider(),
         ),
-        // ChangeNotifierProvider 用于对 ChangeNotifier 进行监听
         ChangeNotifierProvider<LocaleProvider>(
           create: (context) => LocaleProvider(),
         ),
       ],
 
-      // 通过 Consumer2 来组合同时监听两个结果，<>内的对象数量与 Consumer 后面的数字一致
+      // 透過 Consumer2 來組合同時監聽兩個結果，<>內的物件數量與 Consumer 後面的數字一致
       child: Consumer2<ThemeProvider, LocaleProvider>(
         builder:
             (
@@ -50,35 +46,36 @@ class MyApp extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                 ],
 
-                // 语言列表方式一：自动获取所有语言列表
+                // 語言列表方式一：自動取得所有語言列表
                 supportedLocales: AppLocalizations.supportedLocales,
 
-                // 语言列表方式二：自动获取并设置一个默认语言
+                // 語言列表方式二：自動取得並設定一個預設語言
                 // supportedLocales: [
                 //   const Locale('en', ''),
                 //   // ...S.delegate.supportedLocales
                 //   ...AppLocalizations.supportedLocales
                 // ],
-                // 语言列表方式三：手动添加语言列表
+
+                // 語言列表方式三：手動新增語言列表
                 // supportedLocales: [
                 //   const Locale('zh', 'CN'),
                 //   const Locale('en', 'US'),
                 // ],
 
                 // localeListResolutionCallback: (locale, supportedLocales) {
-                //   print(locale); // 在控制台显示当前语言
-                //                return null;
+                //   print(locale);
+                //   return null;
                 // },
 
-                // 插件目前不完善手动处理简繁体
-                // 也用于处理 zh 和 zh_CN 这样有两个不同名字的语言
+                // 插件目前不完善手動處理簡繁體
+                // 也用來處理 zh 和 zh_CN 這樣有兩個不同名字的語言
                 // localeResolutionCallback: (locale, supportLocales) {
-                //   // 中文 简繁体处理
+                //   // 中文 簡繁體處理
                 //   if (locale?.languageCode == 'zh') {
                 //     if (locale?.scriptCode == 'Hant') {
-                //       return const Locale('zh', 'HK'); //繁体
+                //       return const Locale('zh', 'HK'); // 繁體
                 //     } else {
-                //       return const Locale('zh', 'CN'); //简体
+                //       return const Locale('zh', 'CN'); // 簡體
                 //     }
                 //   }
                 //   return null;
@@ -96,48 +93,67 @@ class MyApp extends StatelessWidget {
                   return supportedLocales.first;
                 },
 
-                // 获取 当前的语言
+                // 取得目前的語言
                 locale: Provider.of<LocaleProvider>(
                   context,
                   listen: false,
                 ).locale,
 
-                title: 'xAPP',
-                // 生成应用标题
+                title: 'myApp',
+
                 onGenerateTitle: (context) {
-                  return "appName";
+                  return "myApp";
                 },
 
-                // 深色、浅色主题选择 的第一种方式
+                // 深色、淺色主題選擇的第一種方式
                 // theme: themeProvider.darkMode ? dark_mode : light_mode,
+                // theme: ThemeData(
+                //   primarySwatch: Colors.blue,
+                //   visualDensity: VisualDensity.adaptivePlatformDensity,
+                //   useMaterial3: true,
+                //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+                //   fontFamily: 'Roboto',
+                // ),
                 theme: ThemeData(
-                  primarySwatch: Colors.blue,
-                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  brightness: Brightness.light,
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: Colors.blue,
+                    brightness: Brightness.light,
+                  ),
                   useMaterial3: true,
-                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-                  fontFamily: 'Roboto',
                 ),
 
-                // 深色、浅色主题选择 的第二种方式的第一个选项
+                // 深色、淺色主題選擇的第二種方式的第一個選項
                 themeMode: themeProvider.getThemeMode(
                   Provider.of<ThemeProvider>(context, listen: false).themeMode,
                 ),
 
-                // 深色、浅色主题选择 的第二种方式的第二个选项, 少了这个上面的第一个选项不起作用
-                darkTheme: ThemeData(brightness: Brightness.dark),
+                // 深色、淺色主題選擇的第二種方式的第二個選項, 少了這個上面的第一個選項不起作用
+                darkTheme: ThemeData(
+                  brightness: Brightness.dark,
+                  colorScheme: ColorScheme.fromSeed(
+                    seedColor: Colors.blue,
+                    brightness: Brightness.dark,
+                  ),
+                  useMaterial3: true,
+                ),
 
-                // 设置文字大小不随系统设置改变
+                // 設定文字大小不隨系統設定改變
                 builder: (context, widget) {
                   return MediaQuery(
                     data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
                     child: widget!,
                   );
                 },
+
+                // 路由, 轉頁
                 routes: {
                   "setting": (context) => SettingScreen(),
                   "addTransaction": (context) => AddTransactionScreen(),
                 },
                 debugShowCheckedModeBanner: false,
+
+                // 首頁
                 home: HomeScreen(),
               );
             },

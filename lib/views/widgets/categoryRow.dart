@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import '../../api/dataApi.dart';
+import '../../model/data.dart';
+
+class Categoryrow extends StatelessWidget {
+  final List<Data> filtered;
+
+  const Categoryrow({super.key, required this.filtered});
+
+  //   @override
+  //   State<Categoryrow> createState() => _CategoryrowState();
+  // }
+
+  // class _CategoryrowState extends State<Categoryrow> {
+  @override
+  Widget build(BuildContext context) {
+    final Map<String, double> categoryTotals = {};
+
+    for (final tx in filtered) {
+      final category = tx.category as String;
+      final amount = (tx.amount as double).abs();
+      categoryTotals.update(
+        category,
+        (value) => value + amount,
+        ifAbsent: () => amount,
+      );
+    }
+
+    final sortedCategories = categoryTotals.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final colors = [
+      const Color(0xFF4F46E5), // 餐飲
+      const Color(0xFF0EA5E9), // 交通
+      const Color(0xFFF97316), // 娛樂
+      const Color(0xFF22C55E), // 其他
+    ];
+
+    return SizedBox(
+      height: 78,
+      child: filtered.isEmpty
+          ? Center(child: Text('本月沒有交易'))
+          : ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: sortedCategories.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final entry = sortedCategories[index];
+                final color = colors[index % colors.length];
+                return Container(
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              entry.key,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Text(
+                        // '\$${entry.value.toStringAsFixed(0)}',
+                        '\$${DataApi().formatAmountToString(entry.value)}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}

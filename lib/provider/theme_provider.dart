@@ -3,24 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  final String key = 'theme'; // 用于保存当前主题状态的键名
-  // 定义用于三种主题模式的字典
+  final String key = 'theme'; // 用於儲存目前主題狀態的鍵名
   Map<String, ThemeMode> themeModeList = <String, ThemeMode>{
     'dark': ThemeMode.dark, // 深色模式
-    'light': ThemeMode.light, // 浅色模式
+    'light': ThemeMode.light, // 淺色模式
     'system': ThemeMode.system, // 跟随系统
   };
-
   SharedPreferences? _preferences;
   String _themeMode = 'system';
 
-  // 返回当前的主题模式
-  String get themeMode => _themeMode;
+  String get themeMode => _themeMode; // 返回當前的主題模式
 
-  // 构造方法
+  // 構造方法
   ThemeProvider() {
-    _themeMode = 'system'; // 默认为跟随系统
-    _loadFromPreferences(); // 读取已有模式设置
+    _themeMode = 'system'; // 預設為跟隨系統
+    _loadFromPreferences(); // 讀取已有模式設定
   }
 
   // Initialize the provider
@@ -29,35 +26,20 @@ class ThemeProvider extends ChangeNotifier {
     await _loadFromPreferences();
   }
 
-  // 返回用于显示在界面上的主题选项名称
-  // static String getThemeModeName(String mode, context) {
-  //   switch (mode) {
-  //     case 'dark':
-  //       return "darkMode";
-  //     case 'light':
-  //       return "lightMode";
-  //     default:
-  //       return "autoBySystem";
-  //   }
-  // }
-
+  // 傳回用於顯示在介面上的主題選項名稱
   static String getThemeModeName(String mode, BuildContext context) {
-    // final localizations = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context)!;
     switch (mode) {
       case 'dark':
-        return AppLocalizations.of(context)!.darkMode;
+        return localizations.darkMode;
       case 'light':
-        return AppLocalizations.of(context)!.lightMode;
+        return localizations.lightMode;
       default:
-        return AppLocalizations.of(context)!.autoBySystem;
+        return localizations.autoBySystem;
     }
   }
 
-  // 返回当前的主题模式
-  // ThemeMode getThemeMode(String mode) {
-  //   return themeModeList[mode];
-  // }
-
+  // 返回當前的主題模式
   ThemeMode getThemeMode(String themeMode) {
     return themeModeList[_themeMode] ?? ThemeMode.system;
   }
@@ -68,46 +50,27 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   // 初始化 SharedPreferences
-  // _initialPreferences() async {
-  //   if (_preferences == null)
-  //     _preferences = await SharedPreferences.getInstance();
-  // }
   Future<void> _initialPreferences() async {
     _preferences ??= await SharedPreferences.getInstance();
   }
 
-  //  保存状态
+  // 保存狀態
   Future<void> _savePreferences() async {
     await _preferences!.setString(key, _themeMode);
   }
-  //   Future<void> _savePreferences() async {
-  //   await _preferences!.setString(key, _themeMode);
-  // }
 
-  // 读取状态
-  // _loadFromPreferences() async {
-  //   await _initialPreferences();
-  //   _themeMode = _preferences.getString(key) ?? 'system';
-  //   notifyListeners(); // 变更通知，在数据处理完成后执行
-  // }
-
+  // 讀取狀態
   Future<void> _loadFromPreferences() async {
     await _initialPreferences();
     _themeMode = _preferences!.getString(key) ?? 'system';
     notifyListeners();
   }
 
-  // 深浅色切换状态
-  // toggleChangeTheme(val) {
-  //   _themeMode = val;
-  //   print('current theme mode: $_themeMode');
-  //   _savePreferences();
-  //   notifyListeners(); // 变更通知，在数据处理完成后执行
-  // }
+  // 深淺色切換狀態
   void toggleChangeTheme(String val) {
     _themeMode = val;
-    //   print('current theme mode: $_themeMode');
+    // print('current theme mode: $_themeMode');
     _savePreferences();
-    notifyListeners(); // 变更通知，在数据处理完成后执行
+    notifyListeners(); // 變更通知，在資料處理完成後執行
   }
 }

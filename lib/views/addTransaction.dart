@@ -37,94 +37,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   bool shouldClearDisplay = false;
   bool isCalculating = false;
 
-  // void _onKeyTap(String value) {
-  //   setState(() {
-  //     if (value == 'AC') {
-  //       amountText = '0';
-  //     } else if (value == '←') {
-  //       if (amountText.length > 1) {
-  //         amountText = amountText.substring(0, amountText.length - 1);
-  //       } else {
-  //         amountText = '0';
-  //       }
-  //     } else if (value == 'OK') {
-  //       _saveTransaction();
-  //     } else {
-  //       if (amountText.length >= 13) {
-  //         Fluttertoast.showToast(
-  //           msg: '超過輸入上限', // Message to display in the toast
-  //           backgroundColor: Colors.grey, // Background color of the toast
-  //         );
-  //         return;
-  //       }
-
-  //       if (amountText == '0' && value != '.') {
-  //         amountText = value;
-  //       } else {
-  //         // 防止多個小數點
-  //         if (value == '.' && amountText.contains('.')) return;
-  //         amountText += value;
-  //       }
-  //     }
-  //   });
-  // }
-
-  // void _onKeyTap(String value) {
-  //   setState(() {
-  //     if (value == 'AC') {
-  //       // 清空
-  //       displayText = '0';
-  //       firstOperand = null;
-  //       operator = null;
-  //       shouldClearDisplay = false;
-  //       amountText = '0';
-  //     } else if (value == '←') {
-  //       // 退格
-  //       if (displayText.length > 1) {
-  //         displayText = displayText.substring(0, displayText.length - 1);
-  //       } else {
-  //         displayText = '0';
-  //       }
-  //       amountText = displayText;
-  //     } else if (value == 'OK') {
-  //       _saveTransaction();
-  //     } else if (['+', '-', '×', '÷'].contains(value)) {
-  //       // 運算符
-  //       if (firstOperand == null) {
-  //         firstOperand = double.tryParse(displayText) ?? 0;
-  //       } else {
-  //         _calculate();
-  //         firstOperand = double.tryParse(displayText) ?? 0;
-  //       }
-  //       operator = value.replaceAll('×', '×'); // 確保一致
-  //       shouldClearDisplay = true;
-  //     } else if (value == '=') {
-  //       if (firstOperand != null && operator != null) {
-  //         _calculate();
-  //         firstOperand = null;
-  //         operator = null;
-  //         shouldClearDisplay = true;
-  //       }
-  //     } else {
-  //       // 數字、小數點、00
-  //       if (displayText.length >= 13) {
-  //         Fluttertoast.showToast(msg: '超過輸入上限');
-  //         return;
-  //       }
-
-  //       if (shouldClearDisplay) {
-  //         displayText = value;
-  //         shouldClearDisplay = false;
-  //       } else if (displayText == '0' && value != '.') {
-  //         displayText = value;
-  //       } else {
-  //         if (value == '.' && displayText.contains('.')) return;
-  //         displayText += value;
-  //       }
-  //       amountText = displayText;
-  //     }
-  //   });
-  // }
   void _onKeyTap(String value) {
     setState(() {
       if (value == 'AC') {
@@ -133,7 +45,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         operator = null;
         shouldClearDisplay = false;
         amountText = '0';
-        isCalculating = false; // 🔥 重置按鈕狀態
+        isCalculating = false; // 重置按鈕狀態
       } else if (value == '←') {
         if (displayText.length > 1) {
           displayText = displayText.substring(0, displayText.length - 1);
@@ -142,7 +54,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         }
         amountText = displayText;
       } else if (value == 'RIGHT_BUTTON') {
-        // 🔥 合併按鈕
+        // 合併按鈕
         if (isCalculating && firstOperand != null && operator != null) {
           // 運算中 → 按 = 計算
           _calculate();
@@ -154,7 +66,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           _saveTransaction();
         }
       } else if (['+', '-', '×', '÷'].contains(value)) {
-        // 🔥 按運算符 → OK 變成 =
+        // 按運算符 → OK 變成 =
         if (firstOperand == null) {
           firstOperand = double.tryParse(displayText) ?? 0;
         } else {
@@ -163,7 +75,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         firstOperand = double.tryParse(displayText) ?? 0;
         operator = value;
         shouldClearDisplay = true;
-        isCalculating = true; // 🔥 切換到 = 模式
+        isCalculating = true; // 切換到 = 模式
       } else {
         // 數字、小數點
         if (displayText.length >= 13) {
@@ -245,10 +157,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final yellow = const Color(0xFFF8C850);
-    // final blue = const Color(0xFF37A9E0);
-    // final pink = const Color(0xFFFF6F7D);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('新增交易'),
@@ -391,7 +299,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    // color: selected ? Colors.yellow : Colors.grey[200],
                     color: selected
                         ? !isExpense
                               ? Colors.yellow
@@ -417,57 +324,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         },
       ),
     );
-    // return SizedBox(
-    //   height: 160,
-    //   child: GridView.builder(
-    //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-    //     scrollDirection: Axis.horizontal,
-    //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-    //       crossAxisCount: 2,
-    //       mainAxisSpacing: 8,
-    //       crossAxisSpacing: 8,
-    //       childAspectRatio: 1.9,
-    //     ),
-    //     itemCount: categories.length,
-    //     itemBuilder: (context, index) {
-    //       final item = categories[index];
-    //       final selected = index == selectedCategoryIndex;
-    //       return GestureDetector(
-    //         onTap: () {
-    //           if (index == 0) {
-    //             // TODO: 新增分類邏輯
-    //           } else {
-    //             setState(() => selectedCategoryIndex = index);
-    //           }
-    //         },
-    //         child: Column(
-    //           mainAxisAlignment: MainAxisAlignment.center,
-    //           children: [
-    //             Container(
-    //               width: 42,
-    //               height: 42,
-    //               decoration: BoxDecoration(
-    //                 color: selected ? yellow : Colors.grey[200],
-    //                 borderRadius: BorderRadius.circular(12),
-    //               ),
-    //               child: Icon(
-    //                 item['icon'] as IconData,
-    //                 color: selected ? Colors.orange[900] : Colors.grey[800],
-    //                 size: 22,
-    //               ),
-    //             ),
-    //             const SizedBox(height: 4),
-    //             Text(
-    //               item['label'] as String,
-    //               style: const TextStyle(fontSize: 11),
-    //               overflow: TextOverflow.ellipsis,
-    //             ),
-    //           ],
-    //         ),
-    //       );
-    //     },
-    //   ),
-    // );
   }
 
   // 金額 + 備註 + 日期
@@ -518,37 +374,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ],
                   ),
 
-                  // Container(
-                  //   // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  //   padding: const EdgeInsets.all(5),
-                  //   decoration: BoxDecoration(
-                  //     color: yellow,
-                  //     borderRadius: BorderRadius.circular(10),
-                  //   ),
-                  //   child: Column(
-                  //     children: [
-                  //       Icon(
-                  //         categories[selectedCategoryIndex]['icon'] as IconData,
-                  //         size: 16,
-                  //         color: Colors.orange[900],
-                  //       ),
-                  //       const SizedBox(width: 4),
-                  //       Text(
-                  //         categories[selectedCategoryIndex]['label'] as String,
-                  //         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                   const SizedBox(width: 8),
-                  // Text(
-                  //   // '\$ $amountText',
-                  //   '\$ ${customFormatter.format(double.tryParse(amountText) ?? 0)}',
-                  //   style: const TextStyle(
-                  //     fontSize: 20,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  // ),
+
                   Text(
                     displayText == '錯誤'
                         ? '錯誤'
@@ -559,7 +386,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       color: displayText == '錯誤' ? Colors.red : null,
                     ),
                   ),
-                  // const SizedBox(width: 8),
+
                   VerticalDivider(color: Colors.black, thickness: 2),
                   Expanded(
                     child: TextField(
@@ -631,76 +458,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  // 底部計算機鍵盤
-  // Widget _buildKeyboard() {
-  //   final keys = [
-  //     ['7', '8', '9', '÷', 'AC'],
-  //     ['4', '5', '6', '×', '←'],
-  //     ['1', '2', '3', '+', 'RIGHT_BUTTON'],
-  //     ['00', '0', '.', '-', 'RIGHT_BUTTON'],
-  //   ];
-  //   return Column(
-  //     children: [
-  //       for (var row in keys)
-  //         Expanded(
-  //           child: Row(
-  //             children: row.map((label) {
-  //               if (label.isEmpty) return const Expanded(child: SizedBox());
-
-  //               final isOp = ['+', '-', '×', '÷'].contains(label);
-  //               final isAC = label == 'AC';
-  //               final isRightButton = label == 'RIGHT_BUTTON';
-
-  //               Color bg;
-  //               Color fg = Colors.black;
-  //               String buttonText = label;
-
-  //               if (isRightButton) {
-  //                 buttonText = isCalculating ? '=' : 'OK';
-  //                 bg = isCalculating ? Colors.blue : Colors.pink;
-  //                 fg = Colors.white;
-  //               } else if (isAC || isOp) {
-  //                 bg = Colors.blue;
-  //                 fg = Colors.white;
-  //               } else {
-  //                 bg = Colors.white;
-  //               }
-
-  //               return Expanded(
-  //                 child: Padding(
-  //                   padding: const EdgeInsets.all(2),
-  //                   child: GestureDetector(
-  //                     onTap: () => _onKeyTap(label),
-  //                     child: Container(
-  //                       decoration: BoxDecoration(
-  //                         color: bg,
-  //                         borderRadius: BorderRadius.circular(
-  //                           isRightButton ? 32 : 999,
-  //                         ),
-  //                         border: !isRightButton && !isAC && !isOp
-  //                             ? Border.all(color: Colors.grey[400]!, width: 0.5)
-  //                             : null,
-  //                       ),
-  //                       alignment: Alignment.center,
-  //                       child: Text(
-  //                         buttonText, // 🔥 動態文字
-  //                         style: TextStyle(
-  //                           fontSize: isRightButton ? 18 : 20,
-  //                           fontWeight: FontWeight.bold,
-  //                           color: fg,
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ),
-  //               );
-  //             }).toList(),
-  //           ),
-  //         ),
-  //     ],
-  //   );
-  // }
-
   Widget _buildKeyboard() {
     return Row(
       children: [
@@ -750,7 +507,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               children: [
                 _buildKey('AC'),
                 _buildKey('←'),
-                // const Spacer(),
                 _buildRightButton(),
               ],
             ),

@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleProvider extends ChangeNotifier {
-  final String key = 'locale'; // 用于保存当前语言的键名
-
+  final String key = 'locale'; // 用於保存目前語言的鍵名
   SharedPreferences? _preferences;
-
-  String _language = ''; // 当前的语言名称，例如：'zh'，'en'等
-
-  String get language => _language; // 返回当前语言名称
+  String _language = ''; // 目前的語言名稱，例如：'zh'，'en'等
+  
+  String get language => _language; // 傳回目前語言名稱
 
   Locale? get locale {
     if (_language != '') {
@@ -23,25 +21,26 @@ class LocaleProvider extends ChangeNotifier {
     return null;
   }
 
-  // 返回用于显示在界面中的语言名字
+  // 返回用於顯示在介面中的語言名字
   static String localeName(String lang, context) {
+    final localizations = AppLocalizations.of(context)!;
     switch (lang) {
       case 'en':
-        return AppLocalizations.of(context)!.english;
+        return localizations.english;
       case 'zh':
-        return AppLocalizations.of(context)!.simplifiedChinese;
+        return localizations.simplifiedChinese;
       case 'zh_TW':
-        return AppLocalizations.of(context)!.traditionalChinese;
+        return localizations.traditionalChinese;
       case '':
-        return AppLocalizations.of(context)!.autoBySystem;
+        return localizations.autoBySystem;
       default:
         return lang; // Return lang code as fallback or an empty string
     }
   }
 
-  // 构造方法
+  // 構造方法
   LocaleProvider() {
-    _language = ''; // 默认语言跟随系统
+    _language = ''; // 預設為跟隨系統
     _loadFromPreferences();
   }
 
@@ -50,25 +49,24 @@ class LocaleProvider extends ChangeNotifier {
     _preferences ??= await SharedPreferences.getInstance();
   }
 
-  // 保存当前的语言名称
+  // 儲存目前的語言名稱
   Future<void> _savePreferences() async {
     await _initialPreferences();
     _preferences!.setString(key, _language);
   }
 
-  // 读取已保存的语言名称
+  // 讀取已儲存的語言名稱
   Future<void> _loadFromPreferences() async {
     await _initialPreferences();
     _language = _preferences!.getString(key) ?? '';
     notifyListeners();
   }
 
-  // 切换语言
+  // 切換語言
   toggleChangeLocale(String language) {
     _language = language;
     // print('current locale: $language');
-
     _savePreferences();
-    notifyListeners(); // 变更通知，在数据处理完成后执行
+    notifyListeners(); // 變更通知，在資料處理完成後執行
   }
 }
