@@ -213,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 selectedMonth: selectedMonth,
                 selectedYear: selectedYear,
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -227,40 +228,51 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Icon(Icons.add, size: 28, color: Colors.white),
       ),
-      bottomNavigationBar: BottomAppBar(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        height: 60,
-        color: Colors.cyan.shade400,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 5,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.home_outlined, color: Colors.black),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.pie_chart_outline, color: Colors.black),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.trending_up_outlined, color: Colors.black),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.settings_outlined, color: Colors.black),
-              onPressed: () {
-                Navigator.pushNamed(context, "setting");
-              },
-            ),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: Container(
+      //   decoration: BoxDecoration(
+      //     color: const Color(0xFFFDFDFE),
+      //     boxShadow: [
+      //       BoxShadow(
+      //         color: Colors.black.withOpacity(0.08),
+      //         blurRadius: 20,
+      //         offset: const Offset(0, -4),
+      //       ),
+      //     ],
+      //   ),
+      //   child: BottomAppBar(
+      //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      //     height: 70,
+      //     color: Colors.transparent,
+      //     elevation: 0,
+      //     shape: const CircularNotchedRectangle(),
+      //     notchMargin: 8,
+      //     child: Row(
+      //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //       children: [
+      //         _navIcon(Icons.home_outlined, () {}),
+      //         _navIcon(Icons.pie_chart_outline, () {}),
+      //         const SizedBox(width: 60),
+      //         _navIcon(Icons.trending_up_outlined, () {}),
+      //         _navIcon(Icons.settings_outlined, () {
+      //           Navigator.pushNamed(context, "setting");
+      //         }),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
+
+  // Widget _navIcon(IconData icon, VoidCallback onTap) {
+  //   return InkWell(
+  //     onTap: onTap,
+  //     borderRadius: BorderRadius.circular(12),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(8),
+  //       child: Icon(icon, color: Colors.black87, size: 30),
+  //     ),
+  //   );
+  // }
 
   void _showYearMonthDialog() {
     int dialogYear = selectedYear;
@@ -269,66 +281,71 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFFFDFDFE),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
           ),
+          contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
           content: SizedBox(
             width: double.maxFinite,
-            height: 300,
+            height: 320,
             child: Column(
               children: [
+                // 年份區
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
+                    color: const Color(0xFFF5F5F7),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      IconButton(
-                        onPressed: () {
+                      _roundIconButton(
+                        icon: Icons.chevron_left,
+                        onTap: () {
                           setDialogState(() => dialogYear--);
-                          setState(() => selectedYear = dialogYear);
                         },
-
-                        icon: const Icon(Icons.chevron_left),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
-                          '$dialogYear',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const Spacer(),
+                      Text(
+                        '$dialogYear',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
+                      const Spacer(),
+                      _roundIconButton(
+                        icon: Icons.chevron_right,
+                        onTap: () {
                           setDialogState(() => dialogYear++);
-                          setState(() => selectedYear = dialogYear);
                         },
-                        icon: const Icon(Icons.chevron_right),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
+                // 月份格子
                 Expanded(
                   child: GridView.builder(
+                    padding: EdgeInsets.zero,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 1.3,
                         ),
                     itemCount: 12,
                     itemBuilder: (context, index) {
                       final month = index + 1;
                       final isSelected =
                           selectedMonth == month && dialogYear == selectedYear;
+
                       return GestureDetector(
                         onTap: () {
                           setState(() {
@@ -337,27 +354,31 @@ class _HomeScreenState extends State<HomeScreen> {
                           });
                           Navigator.pop(context);
                         },
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.orange
-                                : Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12),
+                                ? Colors.black
+                                : const Color(0xFFF5F5F7),
+                            borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: isSelected
-                                  ? Colors.orange
-                                  : Colors.grey[300]!,
+                                  ? Colors.black
+                                  : Colors.grey.withOpacity(0.25),
+                              width: 1,
                             ),
                           ),
                           child: Center(
                             child: Text(
-                              '$month月',
+                              '$month 月',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
                                 color: isSelected
                                     ? Colors.white
-                                    : Colors.black87,
+                                    : Colors.black.withOpacity(0.85),
                               ),
                             ),
                           ),
@@ -369,6 +390,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+          actionsPadding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 12,
+            top: 0,
+          ),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: [
             TextButton(
               onPressed: () {
@@ -378,10 +406,50 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                 Navigator.pop(context);
               },
-              child: const Text('今日月份'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black87,
+                textStyle: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              child: const Text('返回本月'),
+            ),
+            FilledButton.tonal(
+              onPressed: () => Navigator.pop(context),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFE5E7EB),
+                foregroundColor: Colors.black87,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('關閉'),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // 小圓形 IconButton（現代簡約）
+  Widget _roundIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: Colors.grey.withOpacity(0.25)),
+        ),
+        child: Icon(icon, size: 20, color: Colors.black87),
       ),
     );
   }

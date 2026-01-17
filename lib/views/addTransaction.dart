@@ -14,7 +14,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   int selectedCategoryIndex = 1;
   DateTime selectedDate = DateTime.now();
   String amountText = '0';
-  final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   final List<Map<String, dynamic>> categories = [
     {'icon': Icons.add, 'label': '新增分類'},
@@ -140,7 +140,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       'isExpense': isExpense,
       'category': categories[selectedCategoryIndex]['label'],
       'amount': double.tryParse(amountText) ?? 0,
-      'note': _noteController.text,
+      'description': _descriptionController.text,
       'date': selectedDate,
     });
   }
@@ -158,25 +158,44 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F7),
       appBar: AppBar(
-        title: const Text('新增交易'),
-        backgroundColor: Colors.grey[100],
+        title: const Text(
+          '新增交易',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w600,
+            // fontSize: 20,
+          ),
+        ),
+        // backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 18),
+          icon: const Icon(Icons.arrow_back_ios, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.white, Colors.white.withOpacity(0.9)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
-      backgroundColor: Colors.grey[100],
+      // backgroundColor: Colors.grey[100],
       body: Column(
         children: [
           // 1. 上方「支出 / 收入」切換 + 分類圖示區
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.only(bottom: 8),
+            // padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
             child: Column(
               children: [
-                const SizedBox(height: 8),
+                // const SizedBox(height: 8),
                 _buildTypeSwitch(),
                 const SizedBox(height: 10),
                 _buildCategoryGrid(),
@@ -184,14 +203,34 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ),
           ),
 
+          // const SizedBox(height: 12),
+
           // 2. 中間：目前選擇 + 金額 + 備註 + 日期列
           _buildAmountNoteBar(),
+          // const SizedBox(height: 16),
 
           // 3. 底部：計算機鍵盤
+          // Expanded(
+          //   child: Container(
+          //     color: Colors.yellow,
+          //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          //     child: _buildKeyboard(),
+          //   ),
+          // ),
           Expanded(
             child: Container(
-              color: Colors.yellow,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              // margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
               child: _buildKeyboard(),
             ),
           ),
@@ -203,30 +242,46 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   // 支出 / 收入 Segment
   Widget _buildTypeSwitch() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(4),
+      // margin: const EdgeInsets.symmetric(horizontal: 16),
+      // padding: const EdgeInsets.all(4),
+      // decoration: BoxDecoration(
+      //   color: Colors.grey[200],
+      //   borderRadius: BorderRadius.circular(24),
+      // ),
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(24),
+        color: const Color(0xFFF1F3F4),
+        borderRadius: BorderRadius.circular(25),
       ),
       child: Row(
         children: [
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => isExpense = true),
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 8),
+                // decoration: BoxDecoration(
+                //   // color: isExpense ? Colors.yellow : Colors.transparent,
+                //   color: isExpense ? Colors.blue : Colors.transparent,
+                //   borderRadius: BorderRadius.circular(20),
+                // ),
                 decoration: BoxDecoration(
-                  // color: isExpense ? Colors.yellow : Colors.transparent,
-                  color: isExpense ? Colors.blue : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
+                  color: isExpense ? Colors.black : Colors.transparent,
+                  borderRadius: BorderRadius.circular(21),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '支出',
+                  // style: TextStyle(
+                  //   fontWeight: FontWeight.w600,
+                  //   color: isExpense ? Colors.black : Colors.grey[700],
+                  // ),
                   style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: isExpense ? Colors.black : Colors.grey[700],
+                    color: isExpense ? Colors.white : Colors.black87,
                   ),
                 ),
               ),
@@ -235,19 +290,29 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => isExpense = false),
-              child: Container(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(vertical: 8),
+                // decoration: BoxDecoration(
+                //   // color: !isExpense ? Colors.yellow : Colors.transparent,
+                //   color: !isExpense ? Colors.yellow : Colors.transparent,
+                //   borderRadius: BorderRadius.circular(20),
+                // ),
                 decoration: BoxDecoration(
-                  // color: !isExpense ? Colors.yellow : Colors.transparent,
-                  color: !isExpense ? Colors.yellow : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
+                  color: !isExpense ? Colors.black : Colors.transparent,
+                  borderRadius: BorderRadius.circular(21),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   '收入',
+                  // style: TextStyle(
+                  //   fontWeight: FontWeight.w600,
+                  //   color: !isExpense ? Colors.black : Colors.grey[700],
+                  // ),
                   style: TextStyle(
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: !isExpense ? Colors.black : Colors.grey[700],
+                    color: !isExpense ? Colors.white : Colors.black87,
                   ),
                 ),
               ),
@@ -304,18 +369,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               ? Colors.yellow
                               : Colors.blue
                         : Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(
                     item['icon'] as IconData,
-                    color: selected ? Colors.orange[900] : Colors.grey[800],
-                    size: 30,
+                    // color: selected ? Colors.orange[900] : Colors.grey[800],
+                    color: selected ? Colors.white : Colors.black,
+                    size: 26,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  item['label'] as String,
-                  style: const TextStyle(fontSize: 11),
+                  (item['label'] as String).replaceAll(' ', '\n'),
+                  // style: const TextStyle(fontSize: 11),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -390,7 +463,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   VerticalDivider(color: Colors.black, thickness: 2),
                   Expanded(
                     child: TextField(
-                      controller: _noteController,
+                      controller: _descriptionController,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: '在此輸入備註',
@@ -504,11 +577,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               crossAxisSpacing: 4,
               mainAxisSpacing: 4,
               childAspectRatio: 1.0,
-              children: [
-                _buildKey('AC'),
-                _buildKey('←'),
-                _buildRightButton(),
-              ],
+              children: [_buildKey('AC'), _buildKey('←'), _buildRightButton()],
             ),
           ),
         ),

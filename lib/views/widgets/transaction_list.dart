@@ -144,7 +144,7 @@ class _TransactionListState extends State<TransactionList> {
                     child: Text(
                       // '\$${dayBalance.toStringAsFixed(1)}',
                       // '${_formatAmount(dayBalance)}',
-                      '\$${DataApi().formatAmountToString(dayBalance)}',
+                      '${dayBalance >= 0 ? '+' : '-'}\$${DataApi().formatAmountToString(dayBalance.abs())}',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -256,7 +256,7 @@ class _TransactionListState extends State<TransactionList> {
           ),
           const SizedBox(width: 8),
           Text(
-            '${tx.isIncome ? '+' : '-'}$formattedAmount', // ✅ 智慧格式化
+            '${tx.isIncome ? '+' : '-'}\$$formattedAmount', // ✅ 智慧格式化
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
