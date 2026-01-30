@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/api/dataApi.dart';
-import '../model/data.dart';
-import '../views/widgets/transaction_list.dart';
+// import 'package:my_app/api/dataApi.dart';
+// import '../model/data.dart';
+import '../models/transaction.dart';
 import '../views/widgets/Summarycard.dart';
 import '../views/widgets/categoryRow.dart';
+
+import '../controllers/controller.dart';
+import '../views/widgets/transaction_list.dart';
+import 'addTransaction.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,34 +17,101 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final Controller _controller = Controller();
+  List<Transaction> transactions = [];
+  bool isLoading = true;
+  // List<Transaction>? list2;
+
   bool _showOnlyThisMonth = true;
-  List<Data>? list;
   int selectedYear = DateTime.now().year;
   int selectedMonth = DateTime.now().month;
 
-  List<Data>? get _filteredTransactions {
-    if (!_showOnlyThisMonth) return list;
+  // double income = 0;
+  // double expense = 0;
+  // double balance = 0;
 
-    return list?.where((tx) {
-      final d = tx.date;
-      return d.year == selectedYear && d.month == selectedMonth;
-    }).toList();
-  }
+  Map<String, double> ieb = {};
+
+  List<Map<String, dynamic>> qqq = [];
+
+  // List<Data>? list;
+
+  // List<Data>? get _filteredTransactions {
+  //   if (!_showOnlyThisMonth) return list;
+
+  //   return list?.where((tx) {
+  //     final d = tx.date;
+  //     return d.year == selectedYear && d.month == selectedMonth;
+  //   }).toList();
+  // }
 
   @override
   void initState() {
     super.initState();
-    _getData();
+    // _getData();
+    // _loadData();
+    _loadTransactions();
   }
 
-  Future<void> _getData() async {
-    list = await DataApi().getData();
-    setState(() {});
+  // Future<void> _getData() async {
+  //   list = await DataApi().getData();
+  //   setState(() {});
+  // }
+
+  // Future<void> _loadData() async {
+  //   final fetchedTransactions = await _controller.getAllTransactions();
+
+  //   setState(() {
+  //     transactions = fetchedTransactions;
+  //     isLoading = false;
+  //   });
+  //   // print(fetchedTransactions);
+  // }
+
+  Future<void> _loadTransactions() async {
+    transactions.clear();
+    String yearMonth =
+        '${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}';
+    final data = await _controller.getTransactionsByMonth(yearMonth);
+
+    // final getIncome = await _controller.getMonthlyIncome(yearMonth);
+    // final getExpense = await _controller.getMonthlyExpense(yearMonth);
+
+    ieb = await _controller.getIncomeAndExpenseAndBalance(
+      yearMonth,
+      _showOnlyThisMonth,
+    );
+
+    qqq = await _controller.getCategoryExpenseSummary(
+      yearMonth,
+      _showOnlyThisMonth,
+    );
+
+    setState(() {
+      transactions = data;
+      // income = getIncome;
+      // expense = getExpense;
+      // balance = income - expense;
+    });
+    // print(monthlyIncome);
+    // print(monthlyExpense);
   }
+
+  // List<Transaction>? get _filteredTransactions2 {
+  //   if (!_showOnlyThisMonth) return list2;
+
+  //   return list2?.where((tx) {
+  //     final d = tx.date;
+  //     return d.year == selectedYear && d.month == selectedMonth;
+  //   }).toList();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = _filteredTransactions;
+    // final filtered = _filteredTransactions;
+    // final filtered = _filteredTransactions2;
+
+    // print(qqq);
 
     return Scaffold(
       extendBody: true,
@@ -81,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 setState(() {
                   _showOnlyThisMonth = !_showOnlyThisMonth;
+                  _loadTransactions();
                 });
               },
               style: TextButton.styleFrom(
@@ -197,22 +269,30 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // 動態計算的總結卡片
               Summarycard(
-                filtered: filtered ?? [],
+                // filtered: filtered ?? [],
                 showOnlyThisMonth: _showOnlyThisMonth,
+                // income: income,
+                // expense: expense,
+                // balance: balance,
+                ieb: ieb,
               ),
               const SizedBox(height: 16),
               // 動態計算的分類統計
-              Categoryrow(filtered: filtered ?? []),
+              Categoryrow(
+                categoryList: qqq,
+                showOnlyThisMonth: _showOnlyThisMonth,
+              ),
               const SizedBox(height: 20),
               const Text(
                 '最近紀錄',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              TransactionList(
-                selectedMonth: selectedMonth,
-                selectedYear: selectedYear,
-              ),
+              // TransactionList(
+              //   selectedMonth: selectedMonth,
+              //   selectedYear: selectedYear,
+              // ),
+              TransactionList(transactions: transactions),
               const SizedBox(height: 20),
             ],
           ),
@@ -220,7 +300,27 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, "addTransaction"),
+        // onPressed: () => Navigator.pushNamed(context, "addTransaction"),
+        // onPressed: () => {
+        //   Navigator.pushNamed(context, "addTransaction"),
+        // },
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                AddTransactionScreen(onTransactionSaved: _loadTransactions),
+          ),
+        ).then((_) => _loadTransactions()),
+        //     onPressed: () async {
+        //       await _controller.createTransaction(
+        //         Transaction(amount: 100.50, type: 'expense', categoryId: 4, date: '2026-01-23', description: '', createdAt: DateTime.now().toIso8601String(), categoryName: '食物', icon: 'restaurant'),
+        //       );
+        //        await _loadTransactions();
+        //       // _loadData();
+
+        // // setState(() {});    // 觸發重建
+
+        //     },
         backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           side: const BorderSide(width: 3, color: Colors.black),
@@ -353,6 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             selectedMonth = month;
                           });
                           Navigator.pop(context);
+                          _loadTransactions();
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 150),

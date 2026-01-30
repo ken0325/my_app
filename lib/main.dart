@@ -7,6 +7,7 @@ import 'package:my_app/provider/theme_provider.dart';
 import 'views/home.dart';
 import 'views/setting.dart';
 import 'views/addTransaction.dart';
+// import 'views/addCategory.dart';
 
 void main() {
   runApp(MyApp());
@@ -150,6 +151,7 @@ class MyApp extends StatelessWidget {
                 routes: {
                   "setting": (context) => SettingScreen(),
                   "addTransaction": (context) => AddTransactionScreen(),
+                  // "addCategory": (context) => AddCategoryScreen(),
                 },
                 debugShowCheckedModeBanner: false,
 
