@@ -666,6 +666,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:sqflite/sqflite.dart' hide Transaction;
 import '../../controllers/controller.dart';
 import '../../models/category.dart';
 import '../../models/transaction.dart';
@@ -673,7 +674,14 @@ import 'addCategory.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   final VoidCallback? onTransactionSaved;
-  const AddTransactionScreen({super.key, this.onTransactionSaved});
+  final Transaction? transaction;
+  final bool isUpdate;
+  const AddTransactionScreen({
+    super.key,
+    this.onTransactionSaved,
+    this.transaction,
+    required this.isUpdate,
+  });
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -699,7 +707,22 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.transaction != null) {
+      widget.transaction!.type == 'expense'
+          ? isExpense = true
+          : isExpense = false;
+      selectedDate = DateTime.parse(widget.transaction!.date);
+      amountText = widget.transaction!.amount.toString();
+      displayText = widget.transaction!.amount.toString();
+      widget.transaction!.description != null
+          ? _descriptionController.text = widget.transaction!.description
+          : null;
+      selectedCategoryId = widget.transaction!.categoryId;
+      selectedCategoryName = widget.transaction!.categoryName;
+      selectedCategoryIcon = widget.transaction!.icon;
+    }
     _loadCategories();
+    // print(widget.transaction);
   }
 
   Future<void> _loadCategories() async {
@@ -713,9 +736,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     if (mounted) {
       setState(() {
         categories = cats;
-        selectedCategoryId = cats[0].id;
-        selectedCategoryName = cats[0].name;
-        selectedCategoryIcon = cats[0].icon;
+        if (widget.isUpdate == false) {
+          selectedCategoryId = cats[0].id;
+          selectedCategoryName = cats[0].name;
+          selectedCategoryIcon = cats[0].icon;
+        }
         isLoading = false;
       });
     }
@@ -729,25 +754,62 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         return;
       }
 
-      final transaction = Transaction(
-        amount: isExpense ? -amount : amount, // ✅ 支出負數，收入正數
-        type: isExpense ? 'expense' : 'income',
-        categoryId: selectedCategoryId,
-        date: DateFormat('yyyy-MM-dd').format(selectedDate),
-        description: _descriptionController.text.isNotEmpty
-            ? _descriptionController.text
-            : null,
-        createdAt: DateTime.now().toIso8601String(),
-        categoryName: selectedCategoryName,
-        icon: selectedCategoryIcon,
-      );
+      if (widget.isUpdate == false) {
+        final transaction = Transaction(
+          // amount: isExpense ? -amount : amount, // ✅ 支出負數，收入正數
+          amount: amount, // ✅ 支出負數，收入正數
+          type: isExpense ? 'expense' : 'income',
+          categoryId: selectedCategoryId,
+          date: DateFormat('yyyy-MM-dd').format(selectedDate),
+          description: _descriptionController.text.isNotEmpty
+              ? _descriptionController.text
+              : null,
+          createdAt: DateTime.now().toIso8601String(),
+          categoryName: selectedCategoryName,
+          icon: selectedCategoryIcon,
+        );
 
-      await _controller.createTransaction(transaction);
+        await _controller.createTransaction(transaction);
+        Fluttertoast.showToast(msg: '交易新增成功');
+      } else {
+        final transaction = Transaction(
+          id: widget.transaction!.id,
+          // amount: isExpense ? -amount : amount, // ✅ 支出負數，收入正數
+          amount: amount, // ✅ 支出負數，收入正數
+          type: isExpense ? 'expense' : 'income',
+          categoryId: selectedCategoryId,
+          date: DateFormat('yyyy-MM-dd').format(selectedDate),
+          description: _descriptionController.text.isNotEmpty
+              ? _descriptionController.text
+              : null,
+          createdAt: widget.transaction!.createdAt,
+          categoryName: selectedCategoryName,
+          icon: selectedCategoryIcon,
+        );
+
+        await _controller.updateTransaction(transaction);
+        Fluttertoast.showToast(msg: '交易Update成功');
+      }
+
+      // final transaction = Transaction(
+      //   // amount: isExpense ? -amount : amount, // ✅ 支出負數，收入正數
+      //   amount: amount, // ✅ 支出負數，收入正數
+      //   type: isExpense ? 'expense' : 'income',
+      //   categoryId: selectedCategoryId,
+      //   date: DateFormat('yyyy-MM-dd').format(selectedDate),
+      //   description: _descriptionController.text.isNotEmpty
+      //       ? _descriptionController.text
+      //       : null,
+      //   createdAt: DateTime.now().toIso8601String(),
+      //   categoryName: selectedCategoryName,
+      //   icon: selectedCategoryIcon,
+      // );
 
       widget.onTransactionSaved?.call();
 
-      Fluttertoast.showToast(msg: '交易新增成功');
-      Navigator.pop(context);
+      // Fluttertoast.showToast(msg: '交易新增成功');
+      // Navigator.pop(context);
+      Navigator.popAndPushNamed(context, 'home');
     } catch (e) {
       Fluttertoast.showToast(msg: '儲存失敗: $e');
     }
@@ -867,8 +929,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F7),
       appBar: AppBar(
-        title: const Text(
-          '新增交易',
+        title: Text(
+          widget.isUpdate == true ? 'Update交易' : '新增交易',
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.transparent,

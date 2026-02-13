@@ -153,6 +153,30 @@ class Controller {
     });
   }
 
+  Future<List<Transaction>> getTransactionsByCategory(int categoryId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+    //   '''
+    //   SELECT t.*, c.name as categoryName, c.icon
+    //   FROM $_transactionsTable t
+    //   LEFT JOIN $_categoriesTable c ON t.category_id = c.id
+    //   WHERE category_id = ?
+    //   ORDER BY t.date DESC, t.created_at DESC
+    // ''',
+      '''
+      SELECT t.*
+      FROM $_transactionsTable t
+      WHERE category_id = ?
+      ORDER BY t.date DESC, t.created_at DESC
+    ''',
+      [categoryId],
+    );
+    // print(maps);
+    return List.generate(maps.length, (i) {
+      return Transaction.fromMap(maps[i]);
+    });
+  }
+
   /// 更新交易
   Future<int> updateTransaction(Transaction transaction) async {
     final db = await database;
@@ -175,41 +199,41 @@ class Controller {
   }
 
   /// 取得總餘額
-  Future<double> getTotalBalance() async {
-    final db = await database;
-    final result = await db.rawQuery('''
-      SELECT COALESCE(SUM(amount), 0) as total FROM $_transactionsTable
-    ''');
-    return (result.first['total'] as num).toDouble();
-  }
+  // Future<double> getTotalBalance() async {
+  //   final db = await database;
+  //   final result = await db.rawQuery('''
+  //     SELECT COALESCE(SUM(amount), 0) as total FROM $_transactionsTable
+  //   ''');
+  //   return (result.first['total'] as num).toDouble();
+  // }
 
   /// 取得當月收入
-  Future<double> getMonthlyIncome(String yearMonth) async {
-    final db = await database;
-    final result = await db.rawQuery(
-      '''
-      SELECT COALESCE(SUM(amount), 0) as total 
-      FROM $_transactionsTable 
-      WHERE type = 'income' AND strftime('%Y-%m', date) = ?
-    ''',
-      [yearMonth],
-    );
-    return (result.first['total'] as num).toDouble();
-  }
+  // Future<double> getMonthlyIncome(String yearMonth) async {
+  //   final db = await database;
+  //   final result = await db.rawQuery(
+  //     '''
+  //     SELECT COALESCE(SUM(amount), 0) as total 
+  //     FROM $_transactionsTable 
+  //     WHERE type = 'income' AND strftime('%Y-%m', date) = ?
+  //   ''',
+  //     [yearMonth],
+  //   );
+  //   return (result.first['total'] as num).toDouble();
+  // }
 
   /// 取得當月支出
-  Future<double> getMonthlyExpense(String yearMonth) async {
-    final db = await database;
-    final result = await db.rawQuery(
-      '''
-      SELECT COALESCE(SUM(abs(amount)), 0) as total 
-      FROM $_transactionsTable 
-      WHERE type = 'expense' AND strftime('%Y-%m', date) = ?
-    ''',
-      [yearMonth],
-    );
-    return (result.first['total'] as num).toDouble();
-  }
+  // Future<double> getMonthlyExpense(String yearMonth) async {
+  //   final db = await database;
+  //   final result = await db.rawQuery(
+  //     '''
+  //     SELECT COALESCE(SUM(abs(amount)), 0) as total 
+  //     FROM $_transactionsTable 
+  //     WHERE type = 'expense' AND strftime('%Y-%m', date) = ?
+  //   ''',
+  //     [yearMonth],
+  //   );
+  //   return (result.first['total'] as num).toDouble();
+  // }
 
   Future<Map<String, double>> getIncomeAndExpenseAndBalance(
     String yearMonth,
@@ -256,7 +280,7 @@ class Controller {
     return {'income': income, 'expense': expense, 'balance': balance};
   }
 
-  Future<List<Map<String, dynamic>>> getCategoryExpenseSummary(
+  Future<List<Map<String, dynamic>>> getCategoryExpenseIncomeSummary(
     String yearMonth,
     bool showOnlyThisMonth,
   ) async {
@@ -268,27 +292,27 @@ class Controller {
         c.id,
         c.name,
         c.icon,
-        COALESCE(SUM(ABS(t.amount)), 0) as total_expense
+        c.type,
+        COALESCE(SUM(ABS(t.amount)), 0) as total
       FROM $_categoriesTable c
       LEFT JOIN $_transactionsTable t ON c.id = t.category_id 
-        AND t.type = 'expense' 
         AND strftime('%Y-%m', t.date) = ?
-      GROUP BY c.id, c.name, c.icon 
-      HAVING total_expense > 0
-      ORDER BY total_expense DESC, c.name ASC
+      GROUP BY c.id, c.name, c.icon, c.type  
+      HAVING total > 0
+      ORDER BY total DESC, c.name ASC
     '''
         : '''
       SELECT 
         c.id,
         c.name,
         c.icon,
-        COALESCE(SUM(ABS(t.amount)), 0) as total_expense
+        c.type,
+        COALESCE(SUM(ABS(t.amount)), 0) as total
       FROM $_categoriesTable c
       LEFT JOIN $_transactionsTable t ON c.id = t.category_id 
-        AND t.type = 'expense' 
-      GROUP BY c.id, c.name, c.icon 
-      HAVING total_expense > 0
-      ORDER BY total_expense DESC, c.name ASC
+      GROUP BY c.id, c.name, c.icon, c.type 
+      HAVING total > 0
+      ORDER BY total DESC, c.name ASC
     ''';
 
     final args = showOnlyThisMonth ? [yearMonth] : [];
@@ -301,14 +325,14 @@ class Controller {
   // ==================== 類別操作 ====================
 
   /// 取得所有類別
-  Future<List<Category>> getAllCategories() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      _categoriesTable,
-      orderBy: 'is_default DESC, name ASC',
-    );
-    return List.generate(maps.length, (i) => Category.fromMap(maps[i]));
-  }
+  // Future<List<Category>> getAllCategories() async {
+  //   final db = await database;
+  //   final List<Map<String, dynamic>> maps = await db.query(
+  //     _categoriesTable,
+  //     orderBy: 'is_default DESC, name ASC',
+  //   );
+  //   return List.generate(maps.length, (i) => Category.fromMap(maps[i]));
+  // }
 
   /// 根據類型取得類別
   Future<List<Category>> getCategoriesByType(String type) async {
@@ -336,25 +360,25 @@ class Controller {
   }
 
   /// 更新類別
-  Future<int> updateCategory(Category category) async {
-    final db = await database;
-    return await db.update(
-      _categoriesTable,
-      category.toMap(),
-      where: 'id = ?',
-      whereArgs: [category.id],
-    );
-  }
+  // Future<int> updateCategory(Category category) async {
+  //   final db = await database;
+  //   return await db.update(
+  //     _categoriesTable,
+  //     category.toMap(),
+  //     where: 'id = ?',
+  //     whereArgs: [category.id],
+  //   );
+  // }
 
   /// 刪除類別 (僅非預設類別)
-  Future<int> deleteCategory(int id) async {
-    final db = await database;
-    return await db.delete(
-      _categoriesTable,
-      where: 'id = ? AND is_default = 0',
-      whereArgs: [id],
-    );
-  }
+  // Future<int> deleteCategory(int id) async {
+  //   final db = await database;
+  //   return await db.delete(
+  //     _categoriesTable,
+  //     where: 'id = ? AND is_default = 0',
+  //     whereArgs: [id],
+  //   );
+  // }
 
   /// 關閉資料庫
   Future<void> close() async {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/transaction.dart';
 import '../../controllers/controller.dart';
+import '../addTransaction.dart';
 
 class TransactionList extends StatefulWidget {
   // final int selectedMonth;
@@ -322,112 +323,132 @@ class _TransactionListState extends State<TransactionList> {
     final categoryName = tx.categoryName;
     IconData categoryIcon = Controller.getIconData(tx.icon ?? 'category');
 
-return InkWell(
-  onTap: () {
-    // Code to execute when the container is tapped
-    print(tx.id);
-  },
-  splashColor: Colors.white.withAlpha(30), // Optional: customize ripple color
-  highlightColor: Colors.blue.withAlpha(50), // Optional: customize highlight color
-  child: Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade100),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
-        children: [
-          // 圖示
-          // Container(
-          //   width: 38,
-          //   height: 38,
-          //   decoration: BoxDecoration(
-          //     color: tx.type == 'income' ? Colors.green[100] : Colors.red[100],
-          //     borderRadius: BorderRadius.circular(12),
-          //   ),
-          //   child: Icon(
-          //     categoryIcon,
-          //     // color: tx.type == 'income' ? Colors.green : Colors.red,
-          //     color: Colors.black,
-          //     size: 20,
-          //   ),
-          // ),
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: tx.type == 'income' ? Colors.green[100] : Colors.red[100],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
+    return InkWell(
+      // onTap: () {
+      //   // Code to execute when the container is tapped
+      //   // print(tx.type);
+
+      // },
+      onTap: () => {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddTransactionScreen(
+              onTransactionSaved: null,
+              transaction: tx,
+              isUpdate: true,
+            ),
+          ),
+        ),
+      },
+      splashColor: Colors.white.withAlpha(
+        30,
+      ), // Optional: customize ripple color
+      highlightColor: Colors.blue.withAlpha(
+        50,
+      ), // Optional: customize highlight color
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F9FA),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade100),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Row(
+          children: [
+            // 圖示
+            // Container(
+            //   width: 38,
+            //   height: 38,
+            //   decoration: BoxDecoration(
+            //     color: tx.type == 'income' ? Colors.green[100] : Colors.red[100],
+            //     borderRadius: BorderRadius.circular(12),
+            //   ),
+            //   child: Icon(
+            //     categoryIcon,
+            //     // color: tx.type == 'income' ? Colors.green : Colors.red,
+            //     color: Colors.black,
+            //     size: 20,
+            //   ),
+            // ),
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: tx.type == 'income'
+                    ? Colors.green[100]
+                    : Colors.red[100],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 2.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Icon(
+                categoryIcon,
+                // color: tx.type == 'income' ? Colors.green : Colors.red,
                 color: Colors.black,
-                width: 2.0,
-                style: BorderStyle.solid,
+                size: 20,
               ),
             ),
-            child: Icon(
-              categoryIcon,
-              // color: tx.type == 'income' ? Colors.green : Colors.red,
-              color: Colors.black,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          // 內容
-          tx.description == null
-              ? Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        categoryName,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
+            const SizedBox(width: 12),
+            // 內容
+            tx.description == null
+                ? Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          categoryName,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  )
+                : Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          categoryName,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          tx.description ?? '',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                )
-              : Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        categoryName,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        tx.description ?? '',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-          // 金額
-          Text(
-            '${tx.type == 'income' ? '+' : '-'}\$${tx.amount.abs().toStringAsFixed(1)}',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: tx.type == 'income' ? Colors.green : Colors.red,
-              fontFamily: 'monospace',
+            // 金額
+            Text(
+              // '${tx.type == 'income' ? '+' : '-'}\$${tx.amount.abs().toStringAsFixed(1)}',
+              '${tx.type == 'income' ? '+' : '-'}\$${_controller.formatAmountToString(tx.amount)}',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: tx.type == 'income' ? Colors.green : Colors.red,
+                fontFamily: 'monospace',
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    )
-);
+    );
 
     // return Container(
     //   margin: const EdgeInsets.only(bottom: 8),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // import '../../api/dataApi.dart';
 import '../../controllers/controller.dart';
+import '../categoryExpenseIncome.dart';
 // import '../../model/data.dart';
 
 class Categoryrow extends StatelessWidget {
@@ -9,7 +10,7 @@ class Categoryrow extends StatelessWidget {
   final bool showOnlyThisMonth;
 
   // const Categoryrow({super.key, required this.filtered});
-  const Categoryrow({
+  Categoryrow({
     super.key,
     required this.categoryList,
     required this.showOnlyThisMonth,
@@ -20,6 +21,21 @@ class Categoryrow extends StatelessWidget {
   // }
 
   // class _CategoryrowState extends State<Categoryrow> {
+
+  final Controller _controller = Controller();
+
+  // Future<void> _load(context, int id, String categoryName) async {
+  //   final list = await _controller.getTransactionsByCategory(id);
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute<void>(
+  //       builder: (context) => CategoryExpenseIncome(
+  //         transactions: list,
+  //         categoryName: categoryName,
+  //       ),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     // final Map<String, double> categoryTotals = {};
@@ -49,7 +65,7 @@ class Categoryrow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            showOnlyThisMonth ? '本月支出最高' : '總支出最高',
+            showOnlyThisMonth ? '本月最高' : '總最高',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -68,8 +84,21 @@ class Categoryrow extends StatelessWidget {
                       final entry = categoryList[index];
                       // final color = colors[index % colors.length];
                       return InkWell(
-                        onTap: () => {
-                          print(entry['id']),
+                        // onTap: () => {
+                        //   // print(entry['id']),
+                        //   _load(context, entry['id'], entry['name']),
+                        // },
+                        onTap: () async {
+                          final list = await _controller
+                              .getTransactionsByCategory(entry['id']);
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (context) => CategoryExpenseIncome(
+                                transactions: list,
+                                categoryName: entry['name'],
+                              ),
+                            ),
+                          );
                         },
                         borderRadius: BorderRadius.circular(999),
                         child: Container(
@@ -77,6 +106,12 @@ class Categoryrow extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: entry['type'] == 'income'
+                                  ? Colors.greenAccent
+                                  : Colors.redAccent,
+                              width: 2,
+                            ),
                           ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -124,7 +159,8 @@ class Categoryrow extends StatelessWidget {
                               Text(
                                 // '\$${entry.value.toStringAsFixed(0)}',
                                 // '\$${DataApi().formatAmountToString(entry.value)}',
-                                '\$${entry['total_expense']}',
+                                // '\$${entry['total_expense']}',
+                                '\$${entry['total']}',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,

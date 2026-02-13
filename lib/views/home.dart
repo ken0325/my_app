@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Map<String, double> ieb = {};
 
-  List<Map<String, dynamic>> qqq = [];
+  List<Map<String, dynamic>> xxx = [];
 
   // List<Data>? list;
 
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _showOnlyThisMonth,
     );
 
-    qqq = await _controller.getCategoryExpenseSummary(
+    xxx = await _controller.getCategoryExpenseIncomeSummary(
       yearMonth,
       _showOnlyThisMonth,
     );
@@ -144,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             height: 34,
             padding: const EdgeInsets.all(3),
+            margin: EdgeInsets.fromLTRB(0, 0, 3, 0),
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(20),
@@ -169,11 +170,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.calendar_today_outlined),
-            color: Colors.black,
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.calendar_today_outlined),
+          //   color: Colors.black,
+          // ),
         ],
       ),
       // drawer: Drawer(
@@ -249,11 +250,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 80),
                 children: [
-                  _buildMenuItem(Icons.home_outlined, '首頁', 'home'),
-                  _buildMenuItem(Icons.analytics_outlined, '統計', '/'),
-                  _buildMenuItem(Icons.trending_up_outlined, '報告', '/'),
+                  // _buildMenuItem(Icons.home_outlined, '首頁', 'home'),
+                  // _buildMenuItem(Icons.analytics_outlined, '統計', '/'),
+                  // _buildMenuItem(Icons.trending_up_outlined, '報告', '/'),
                   _buildMenuItem(Icons.settings_outlined, '設定', 'setting'),
-                  _buildMenuItem(Icons.logout_outlined, '登出', '/'),
+                  _buildMenuItem(Icons.category_outlined, 'category', 'categoryManage'),
+                  // _buildMenuItem(Icons.logout_outlined, '登出', '/'),
                 ],
               ),
             ),
@@ -279,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               // 動態計算的分類統計
               Categoryrow(
-                categoryList: qqq,
+                categoryList: xxx,
                 showOnlyThisMonth: _showOnlyThisMonth,
               ),
               const SizedBox(height: 20),
@@ -308,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                AddTransactionScreen(onTransactionSaved: _loadTransactions),
+                AddTransactionScreen(onTransactionSaved: _loadTransactions, isUpdate: false,),
           ),
         ).then((_) => _loadTransactions()),
         //     onPressed: () async {

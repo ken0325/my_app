@@ -4,6 +4,7 @@ import 'package:my_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:my_app/provider/locale_provider.dart';
 import 'package:my_app/provider/theme_provider.dart';
+import 'views/categoryManage.dart';
 import 'views/home.dart';
 import 'views/setting.dart';
 import 'views/addTransaction.dart';
@@ -149,9 +150,11 @@ class MyApp extends StatelessWidget {
 
                 // 路由, 轉頁
                 routes: {
+                  "home": (context) => HomeScreen(),
                   "setting": (context) => SettingScreen(),
-                  "addTransaction": (context) => AddTransactionScreen(),
+                  "addTransaction": (context) => AddTransactionScreen(isUpdate: false,),
                   // "addCategory": (context) => AddCategoryScreen(),
+                  "categoryManage": (context) => CategoryManageScreen(),
                 },
                 debugShowCheckedModeBanner: false,
 
